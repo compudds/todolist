@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>FormatVersion</key>
+	<string>1.2</string>
+	<key>RunDestination</key>
+	<dict>
+		<key>LocalComputer</key>
+		<dict>
+			<key>BusSpeedInMHz</key>
+			<integer>100</integer>
+			<key>CPUCount</key>
+			<integer>1</integer>
+			<key>CPUKind</key>
+			<string>Intel Core i5</string>
+			<key>CPUSpeedInMHz</key>
+			<integer>1300</integer>
+			<key>Identifier</key>
+			<string>0D916D9B-9CE8-5266-9B03-559A0EF6DC9A</string>
+			<key>IsConcreteDevice</key>
+			<true/>
+			<key>LogicalCPUCoresPerPackage</key>
+			<integer>4</integer>
+			<key>ModelCode</key>
+			<string>MacBookAir6,2</string>
+			<key>ModelName</key>
+			<string>MacBook Air</string>
+			<key>ModelUTI</key>
+			<string>com.apple.macbookair-13-unibody</string>
+			<key>Name</key>
+			<string>My Mac</string>
+			<key>NativeArchitecture</key>
+			<string>x86_64h</string>
+			<key>OperatingSystemVersion</key>
+			<string>10.10.5</string>
+			<key>OperatingSystemVersionWithBuildNumber</key>
+			<string>10.10.5 (14F27)</string>
+			<key>PhysicalCPUCoresPerPackage</key>
+			<integer>2</integer>
+			<key>Platform</key>
+			<dict>
+				<key>Identifier</key>
+				<string>com.apple.platform.macosx</string>
+				<key>Name</key>
+				<string>OS X</string>
+			</dict>
+			<key>RAMSizeInMegabytes</key>
+			<integer>8192</integer>
+		</dict>
+		<key>Name</key>
+		<string>Eric's iPhone 6</string>
+		<key>TargetArchitecture</key>
+		<string>arm64</string>
+		<key>TargetDevice</key>
+		<dict>
+			<key>Identifier</key>
+			<string>2b104a1cd7a9cd57ea098468d2c6006e21aea15d</string>
+			<key>IsConcreteDevice</key>
+			<true/>
+			<key>ModelCode</key>
+			<string>iPhone7,2</string>
+			<key>ModelName</key>
+			<string>iPhone 6</string>
+			<key>ModelUTI</key>
+			<string>com.apple.iphone-6-d7d9d8</string>
+			<key>Name</key>
+			<string>Eric's iPhone 6</string>
+			<key>NativeArchitecture</key>
+			<string>arm64</string>
+			<key>OperatingSystemVersion</key>
+			<string>8.4.1</string>
+			<key>OperatingSystemVersionWithBuildNumber</key>
+			<string>8.4.1 (12H321)</string>
+			<key>Platform</key>
+			<dict>
+				<key>Identifier</key>
+				<string>com.apple.platform.iphoneos</string>
+				<key>Name</key>
+				<string>iOS</string>
+			</dict>
+		</dict>
+		<key>TargetSDK</key>
+		<dict>
+			<key>Identifier</key>
+			<string>iphoneos8.4</string>
+			<key>IsInternal</key>
+			<false/>
+			<key>Name</key>
+			<string>iOS 8.4</string>
+			<key>OperatingSystemVersion</key>
+			<string>8.4</string>
+		</dict>
+	</dict>
+	<key>TestableSummaries</key>
+	<array>
+		<dict>
+			<key>ProjectPath</key>
+			<string>Warranty Wallet.xcodeproj</string>
+			<key>TargetName</key>
+			<string>Warranty WalletTests</string>
+			<key>TestName</key>
+			<string>Warranty WalletTests</string>
+			<key>TestObjectClass</key>
+			<string>IDESchemeActionTestableSummary</string>
+			<key>Tests</key>
+			<array>
+				<dict>
+					<key>Subtests</key>
+					<array>
+						<dict>
+							<key>Subtests</key>
+							<array>
+								<dict>
+									<key>Subtests</key>
+									<array>
+										<dict>
+											<key>TestIdentifier</key>
+											<string>To_Do_ListTests/testExample()</string>
+											<key>TestName</key>
+											<string>testExample()</string>
+											<key>TestObjectClass</key>
+											<string>IDESchemeActionTestSummary</string>
+											<key>TestStatus</key>
+											<string>Success</string>
+											<key>TestSummaryGUID</key>
+											<string>458897AD-8E2B-49BC-8162-7A4ED94F13EC</string>
+										</dict>
+										<dict>
+											<key>PerformanceMetrics</key>
+											<array>
+												<dict>
+													<key>Identifier</key>
+													<string>com.apple.XCTPerformanceMetric_WallClockTime</string>
+													<key>MaxPercentRegression</key>
+													<integer>10</integer>
+													<key>MaxPercentRelativeStandardDeviation</key>
+													<integer>10</integer>
+													<key>MaxRegression</key>
+													<real>0.10000000000000001</real>
+													<key>MaxStandardDeviation</key>
+													<real>0.10000000000000001</real>
+													<key>Measurements</key>
+													<array>
+														<real>1.6625000000000001e-05</real>
+														<real>4.0409999999999999e-06</real>
+														<real>2.9579999999999999e-06</real>
+														<real>2.5830000000000001e-06</real>
+														<real>2.5409999999999999e-06</real>
+														<real>2.5000000000000002e-06</real>
+														<real>2.4159999999999998e-06</real>
+														<real>2.4159999999999998e-06</real>
+														<real>2.4159999999999998e-06</real>
+														<real>2.458e-06</real>
+													</array>
+													<key>Name</key>
+													<string>Time</string>
+													<key>UnitOfMeasurement</key>
+													<string>seconds</string>
+												</dict>
+											</array>
+											<key>TestIdentifier</key>
+											<string>To_Do_ListTests/testPerformanceExample()</string>
+											<key>TestName</key>
+											<string>testPerformanceExample()</string>
+											<key>TestObjectClass</key>
+											<string>IDESchemeActionTestSummary</string>
+											<key>TestStatus</key>
+											<string>Success</string>
+											<key>TestSummaryGUID</key>
+											<string>C14A701C-4FB4-44BF-8135-AE9A15415F0D</string>
+										</dict>
+									</array>
+									<key>TestIdentifier</key>
+									<string>To_Do_ListTests</string>
+									<key>TestName</key>
+									<string>To_Do_ListTests</string>
+									<key>TestObjectClass</key>
+									<string>IDESchemeActionTestSummaryGroup</string>
+								</dict>
+							</array>
+							<key>TestIdentifier</key>
+							<string>Warranty WalletTests.xctest</string>
+							<key>TestName</key>
+							<string>Warranty WalletTests.xctest</string>
+							<key>TestObjectClass</key>
+							<string>IDESchemeActionTestSummaryGroup</string>
+						</dict>
+					</array>
+					<key>TestIdentifier</key>
+					<string>All tests</string>
+					<key>TestName</key>
+					<string>All tests</string>
+					<key>TestObjectClass</key>
+					<string>IDESchemeActionTestSummaryGroup</string>
+				</dict>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
