@@ -13,22 +13,32 @@ class WarrantyImageViewController: UIViewController, UIScrollViewDelegate {
 
     @IBOutlet var image: UIImageView!
     
-    @IBOutlet var scrollView: UIScrollView!
+   // @IBOutlet var scrollView: UIScrollView!
+    
+    @IBOutlet var scrollImg: UIScrollView!
     
     var showImage = UIImage()
     
     var activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView()
     
+    func shareImage(yourImage: UIImage) {
+        
+        let vc = UIActivityViewController(activityItems: [yourImage], applicationActivities: [])
+        
+        presentViewController(vc, animated: true, completion: nil)
+    }
+    
+    
     @IBAction func print(sender: AnyObject) {
         
-        func shareImage(yourImage: UIImage) {
-        
-            let vc = UIActivityViewController(activityItems: [yourImage], applicationActivities: [])
-            presentViewController(vc, animated: true, completion: nil)
+        if image.image == nil {
+            
+        } else {
+            
+            shareImage(image.image!)
+            
         }
-        
-        shareImage(showImage)
-        
+
         
     }
     @IBAction func backBtn(sender: AnyObject) {
@@ -41,19 +51,21 @@ class WarrantyImageViewController: UIViewController, UIScrollViewDelegate {
         activityIndicator.startAnimating()
         UIApplication.sharedApplication().beginIgnoringInteractionEvents()
         
+        parseImage = ""
+        
         performSegueWithIdentifier("warrantyImageToHome", sender: self)
         
     }
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        scrollView.contentSize.height = 531
-        scrollView.contentSize.width = 353
+        //scrollView.contentSize.height = 531
+        //scrollView.contentSize.width = 353
         
         let vWidth = self.view.frame.width
         let vHeight = self.view.frame.height
         
-        let scrollImg: UIScrollView = UIScrollView()
+        //let scrollImg: UIScrollView = UIScrollView()
         scrollImg.delegate = self
         scrollImg.frame = CGRectMake(15, 60, vWidth, vHeight)
         scrollImg.alwaysBounceVertical = false
@@ -70,7 +82,7 @@ class WarrantyImageViewController: UIViewController, UIScrollViewDelegate {
         image!.clipsToBounds = false
         scrollImg.addSubview(image!)
         
-        // Do any additional setup after loading the view.
+        
     }
     
     func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
@@ -79,23 +91,22 @@ class WarrantyImageViewController: UIViewController, UIScrollViewDelegate {
     
     func getImage() {
         
-        //var imageShow = UIImage()
-        //let imageData = UIImagePNGRepresentation(imageShow)
-        //let imageFile = PFFile(name:"warranty.png", data:imageData)
         
         let query = PFQuery(className:"Warranties")
         query.whereKey("objectId", equalTo: parseImage)
         query.findObjectsInBackgroundWithBlock {
-            (objects: [AnyObject]?, error: NSError?) -> Void in
+            (objects: [PFObject]?, error: NSError?) -> Void in
             
             if error == nil {
                 
                 self.print("Successfully retrieved \(objects!.count) warranty image.")
                 
-                if let objects = objects as? [PFObject] {
-                    for object in objects {
+                //if let objects = objects {
+                    for object in objects! {
                         
                         let userImageFile = object["warranty"] as! PFFile  //anotherPhoto["imageFile"] as PFFile
+                        
+                        if (userImageFile.name != "") {
                        
                         userImageFile.getDataInBackgroundWithBlock {
                             (imageData: NSData?, error: NSError?) -> Void in
@@ -107,13 +118,7 @@ class WarrantyImageViewController: UIViewController, UIScrollViewDelegate {
                                         self.showImage = UIImage(data:imageData)!
                                         self.image.image = self.showImage
                                         
-                                    }  else {
-                                        
-                                        //self.showImage = UIImage(named:"icon.png")!
-                                        //self.image.image = self.showImage
-                                        
                                     }
-                                   
                                 }
                                 
                             }
@@ -121,30 +126,58 @@ class WarrantyImageViewController: UIViewController, UIScrollViewDelegate {
                             
                         }
                         
+                        } else {
+                                
+                                let alert = UIAlertController(title: "Sorry, Warranty Image was not found.", message: "The image was never uploaded.", preferredStyle: UIAlertControllerStyle.Alert)
+                                alert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { action in
+                                    
+                                    alert.dismissViewControllerAnimated(true, completion: nil)
+                                    
+                                    
+                                }))
+                                
+                                self.presentViewController(alert, animated: true, completion: nil)
+                            
+                                
+                            }
+                        
                     }
+
                     
-                }
+                //}
                 
             } else {
                 
                 self.print(error!)
                 
+                let alert = UIAlertController(title: "Sorry, Warranty Image was not found.", message: "The image was never uploaded.", preferredStyle: UIAlertControllerStyle.Alert)
+                alert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { action in
+                    
+                    alert.dismissViewControllerAnimated(true, completion: nil)
+                    
+                    
+                }))
+                
+                self.presentViewController(alert, animated: true, completion: nil)
+                
+                
             }
+
         }
     }
-    
+
     override func viewDidAppear(animated: Bool) {
         
         noInternetConnection()
     }
-    
+
     func noInternetConnection() {
         
         if Reachability.isConnectedToNetwork() == true {
             
             print("Internet connection OK")
             
-            print(userEmail)
+            //print(userEmail)
             
             getImage()
             

@@ -16,7 +16,15 @@ var parseObjectId = [String]()
 
 var parseImage = String()
 
-class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UINavigationControllerDelegate {
+
+class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UINavigationControllerDelegate, UISearchBarDelegate {
+    
+    
+    @IBOutlet var searchBarText: UISearchBar!
+    
+    var searchActive : Bool = false
+    
+    var filtered:[String] = []
     
     var activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView()
     
@@ -61,8 +69,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         purchaseDateItem = []
         endDateItem = []
         notesItem = []
+        warrantyItem = []
+        receiptItem = []
         parseObjectId = []
-        
+        userEmail = ""
+     
         PFUser.logOut()
         
         performSegueWithIdentifier("homeToLogin", sender: self)
@@ -75,8 +86,132 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if(searchActive) {
+            
+            return filtered.count
+            
+        } else {
+            
+            return newItemItem.count
+        }
+    }
+    
+    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+        searchActive = true;
+    }
+    
+    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
+        searchActive = false;
+        searchBarText.text = ""
+        //getWarranties()
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        searchActive = false;
+        searchBarText.text = ""
+        getWarranties()
+    }
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         
-        return newItemItem.count
+        searchActive = true;
+    }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        filtered = newItemItem.filter({ (text) -> Bool in
+            let tmp: NSString = text
+            
+            let range = tmp.rangeOfString(searchText, options: NSStringCompareOptions.CaseInsensitiveSearch)
+            
+            return range.location != NSNotFound
+        })
+        
+        
+        if(filtered.count == 0){
+            
+            searchActive = false;
+            
+        } else {
+            
+            searchActive = true;
+            
+            newItemItem = []
+            modelItem = []
+            serialItem = []
+            boughtItem = []
+            phoneItem = []
+            priceItem = []
+            purchaseDateItem = []
+            endDateItem = []
+            notesItem = []
+            warrantyItem = []
+            receiptItem = []
+            parseObjectId = []
+            
+            let search = searchText.lowercaseString
+            let search2 = searchText.capitalizedString
+            
+            print("searchText: \(searchText)")
+            
+            let query = PFQuery(className:"Warranties")
+            query.whereKey("userId", equalTo: PFUser.currentUser()!.objectId!)
+            query.whereKey("product", containsString: search)
+            
+            let query2 = PFQuery(className:"Warranties")
+            query2.whereKey("userId", equalTo: PFUser.currentUser()!.objectId!)
+            query2.whereKey("product", containsString: search2)
+            
+            let mainQuery = PFQuery.orQueryWithSubqueries([query, query2]);
+            mainQuery.orderByAscending("endDate")
+            mainQuery.findObjectsInBackgroundWithBlock {
+                (objects: [PFObject]?, error: NSError?) -> Void in
+                
+                if error == nil {
+                    
+                    print("Successfully retrieved \(objects!.count) warranties.")
+                    
+                    if let objects = objects {
+                        for object in objects {
+                            print(object.objectId)
+                            
+                            newItemItem.append(object["product"] as! String)
+                            modelItem.append(object["model"] as! String)
+                            serialItem.append(object["serial"] as! String)
+                            boughtItem.append(object["bought"] as! String)
+                            phoneItem.append(object["phone"] as! String)
+                            priceItem.append(object["price"] as! String)
+                            purchaseDateItem.append(object["purchaseDate"] as! String)
+                            endDateItem.append(object["endDate"] as! String)
+                            notesItem.append(object["notes"] as! String)
+                            warrantyItem.append(object["warranty"] as! PFFile)
+                            receiptItem.append(object["receipt"] as! PFFile)
+                            parseObjectId.append(object.objectId!)
+                            
+                        }
+                        print(parseObjectId)
+                        print(newItemItem)
+                        print(modelItem)
+                        print(serialItem)
+                        print(boughtItem)
+                        print(phoneItem)
+                        print(priceItem)
+                        print(purchaseDateItem)
+                        print(endDateItem)
+                        print(notesItem)
+                    }
+                    
+                    
+                } else {
+                    // Log details of the failure
+                    print("Error: \(error!) \(error!.userInfo)")
+                }
+                
+                self.tableView.reloadData()
+            }
+            
+        }
+        
     }
     
     let reuseIdentifier = "Cell1"
@@ -89,18 +224,31 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         cell!.textLabel!.font = UIFont.systemFontOfSize(18)
         
-        cell!.textLabel!.text = " Product: \(newItemItem[indexPath.row]) \r Model #: \(modelItem[indexPath.row]) \r Serial #: \(serialItem[indexPath.row]) \r Bought At: \(boughtItem[indexPath.row]) \r Phone #: \(phoneItem[indexPath.row]) \r Price: $\(priceItem[indexPath.row]) \r Purchase Date: \(purchaseDateItem[indexPath.row]) \r Expire Date: \(endDateItem[indexPath.row]) \r Notes: \(notesItem[indexPath.row]) \r" //array[indexPath.row]
+        if(searchActive){
+            
+            cell.textLabel!.text = filtered[indexPath.row]
+            
+        } else {
+            
+            cell!.textLabel!.text = " Product: \(newItemItem[indexPath.row]) \r Model #: \(modelItem[indexPath.row]) \r Serial #: \(serialItem[indexPath.row]) \r Bought At: \(boughtItem[indexPath.row]) \r Phone #: \(phoneItem[indexPath.row]) \r Price: $\(priceItem[indexPath.row]) \r Purchase Date: \(purchaseDateItem[indexPath.row]) \r Expire Date: \(endDateItem[indexPath.row]) \r Notes: \(notesItem[indexPath.row])"
+        }
+        
         
         return cell!
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
+        parseImage = parseObjectId[indexPath.row]
+        
         let alert = UIAlertController(title: "View Photo or Edit", message: "", preferredStyle: UIAlertControllerStyle.Alert)
         
         alert.addAction(UIAlertAction(title: "Receipt Photo", style: .Default, handler: { action in
             
             alert.dismissViewControllerAnimated(true, completion: nil)
+            
+            //parseImage = parseObjectId[indexPath.row]
+            print(parseImage)
             
             self.performSegueWithIdentifier("homeToReceiptImage", sender: self)
             
@@ -109,6 +257,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         alert.addAction(UIAlertAction(title: "Warranty Photo", style: .Default, handler: { action in
                 
             alert.dismissViewControllerAnimated(true, completion: nil)
+            
+            //parseImage = parseObjectId[indexPath.row]
+            print(parseImage)
             
             self.performSegueWithIdentifier("homeToWarrantyImage", sender: self)
             
@@ -130,21 +281,41 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.presentViewController(alert, animated: true, completion: nil)
         
-
+        if(searchActive) {
        
-        parseObjectIdEdit = parseObjectId[indexPath.row]
-        parseImage = parseObjectId[indexPath.row]
-        newItemEdit = newItemItem[indexPath.row]
-        modelEdit = modelItem[indexPath.row]
-        serialEdit = serialItem[indexPath.row]
-        boughtEdit = boughtItem[indexPath.row]
-        phoneEdit = phoneItem[indexPath.row]
-        priceEdit = priceItem[indexPath.row]
-        purchaseDateEdit = purchaseDateItem[indexPath.row]
-        endDateEdit = endDateItem[indexPath.row]
-        notesEdit = notesItem[indexPath.row]
-        
-        performSegueWithIdentifier("homeToEdit", sender: self)
+            parseObjectIdEdit = parseObjectId[indexPath.row]
+            
+            newItemEdit = newItemItem[indexPath.row]
+            modelEdit = modelItem[indexPath.row]
+            serialEdit = serialItem[indexPath.row]
+            boughtEdit = boughtItem[indexPath.row]
+            phoneEdit = phoneItem[indexPath.row]
+            priceEdit = priceItem[indexPath.row]
+            purchaseDateEdit = purchaseDateItem[indexPath.row]
+            endDateEdit = endDateItem[indexPath.row]
+            notesEdit = notesItem[indexPath.row]
+            
+            performSegueWithIdentifier("homeToEdit", sender: self)
+
+            
+        } else {
+            
+            parseObjectIdEdit = parseObjectId[indexPath.row]
+            
+            newItemEdit = newItemItem[indexPath.row]
+            modelEdit = modelItem[indexPath.row]
+            serialEdit = serialItem[indexPath.row]
+            boughtEdit = boughtItem[indexPath.row]
+            phoneEdit = phoneItem[indexPath.row]
+            priceEdit = priceItem[indexPath.row]
+            purchaseDateEdit = purchaseDateItem[indexPath.row]
+            endDateEdit = endDateItem[indexPath.row]
+            notesEdit = notesItem[indexPath.row]
+            
+            performSegueWithIdentifier("homeToEdit", sender: self)
+
+            
+        }
         
     }
     
@@ -153,15 +324,15 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         let query = PFQuery(className:"Warranties")
         query.whereKey("userId", equalTo: PFUser.currentUser()!.objectId!)
-        query.orderByAscending("endDate")
+        query.orderByDescending("endDate")
         query.findObjectsInBackgroundWithBlock {
-            (objects: [AnyObject]?, error: NSError?) -> Void in
+            (objects: [PFObject]?, error: NSError?) -> Void in
             
             if error == nil {
                 
                 print("Successfully retrieved \(objects!.count) warranties.")
             
-                if let objects = objects as? [PFObject] {
+                if let objects = objects {
                     for object in objects {
                         print(object.objectId)
                     
@@ -174,6 +345,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                         purchaseDateItem.append(object["purchaseDate"] as! String)
                         endDateItem.append(object["endDate"] as! String)
                         notesItem.append(object["notes"] as! String)
+                        warrantyItem.append(object["warranty"] as! PFFile)
+                        receiptItem.append(object["receipt"] as! PFFile)
                         parseObjectId.append(object.objectId!)
                         
                     }
@@ -198,9 +371,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             self.tableView.reloadData()
         }
         
+        //self.tableView.reloadData()
         
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -210,7 +383,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         self.refreshControl = UIRefreshControl()
         self.refreshControl.attributedTitle = NSAttributedString(string: "Pull to refresh")
-        self.refreshControl.addTarget(self, action: "refresh:", forControlEvents: UIControlEvents.ValueChanged)
+        self.refreshControl.addTarget(self, action: #selector(HomeViewController.refresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
         self.tableView.addSubview(refreshControl)
         
         activityIndicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 80, 80))
@@ -222,13 +395,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         UIApplication.sharedApplication().beginIgnoringInteractionEvents()
         
         scrollView.contentSize.height = 667
-        scrollView.contentSize.width = 300
+        scrollView.contentSize.width = 250
         
         activityIndicator.stopAnimating()
         UIApplication.sharedApplication().endIgnoringInteractionEvents()
         
-        //let nibName = UINib(nibName: "TableViewCell", bundle:nil)
-        //self.tableView.registerNib(nibName, forCellReuseIdentifier: "Cell1")
+        searchBarText.delegate = self
         
     }
     
@@ -249,7 +421,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         parseObjectId = []
         
         getWarranties()
-        //self.tableView.reloadData()
+        self.tableView.reloadData()
         
         activityIndicator.stopAnimating()
         UIApplication.sharedApplication().endIgnoringInteractionEvents()
@@ -269,13 +441,13 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             let query = PFQuery(className:"Warranties")
             query.whereKey("objectId", equalTo: parseObjectId[indexPath.row])
             query.findObjectsInBackgroundWithBlock {
-                (objects: [AnyObject]?, error: NSError?) -> Void in
+                (objects: [PFObject]?, error: NSError?) -> Void in
                 
                 if error == nil {
                 
                     print("Successfully retrieved \(objects!.count) warranties.")
     
-                    if let objects = objects as? [PFObject] {
+                    if let objects = objects {
                         for object in objects {
                             
                             print(object.objectId)
@@ -374,11 +546,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Create our Installation query
         let pushQuery = PFQuery(className: "Warranties")
         pushQuery.whereKey("userId", equalTo: PFUser.currentUser()!.objectId!)
-        pushQuery.whereKey("endDate", greaterThan: "")
+        pushQuery.whereKey("endDate", notEqualTo: "")
+        pushQuery.whereKey("endDate", lessThanOrEqualTo: currentDate)
         pushQuery.whereKey("pushSent", notEqualTo: "yes")
-        pushQuery.whereKey("endDate", lessThan: currentDate)
         pushQuery.findObjectsInBackgroundWithBlock {
-            (objects: [AnyObject]?, error: NSError?) -> Void in
+            (objects: [PFObject]?, error: NSError?) -> Void in
             
             if error == nil {
                 // The find succeeded.
@@ -386,7 +558,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 print(currentDate)
                 print("Successfully retrieved \(objects!.count) warranties for push.")
                 // Do something with the found objects
-                if let objects = objects as? [PFObject] {
+                if let objects = objects {
+        
                     for object in objects {
                         print(object.objectId)
                         product = object["product"] as! String
@@ -394,19 +567,30 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                         expDate = object["endDate"] as! String
                         
                         print("\(objects.count) Push notifications being sent.")
-                        
+                        /*
                         // Send a notification to all devices subscribed to the "expireDate" channel.
                         let push = PFPush()
                         //push.setQuery(pushQuery)
                         push.setChannel("expireDate")
                         push.setMessage("Your warranty for " + product + " " + model + " has expired on " + expDate + ".")
-                        push.sendPushInBackground()
+                        push.sendPushInBackground()*/
+                        
+                        
+                        let alert = UIAlertController(title: "A Warranty Has Expired", message: "Your warranty for \(product) \(model) has expired on \(expDate).", preferredStyle: UIAlertControllerStyle.Alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { action in
+                            
+                            alert.dismissViewControllerAnimated(true, completion: nil)
+                            
+                            
+                        }))
+                        
+                        self.presentViewController(alert, animated: true, completion: nil)
                         
                         object["pushSent"] = "yes"
                         object.saveInBackground()
                         
                     }
-                }
+               }
             } else {
                 // Log details of the failure
                 print("Error: \(error!) ")
@@ -414,7 +598,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
 
     }
-
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         

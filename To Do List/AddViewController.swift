@@ -18,6 +18,8 @@ var priceItem = [String]()
 var phoneItem = [String]()
 var purchaseDateItem = [String]()
 var endDateItem = [String]()
+var warrantyItem = [PFFile]()
+var receiptItem = [PFFile]()
 var notesItem = [String]()
 
 //var imageW = UIImage()
@@ -145,11 +147,11 @@ class AddViewController: UIViewController, UITextFieldDelegate, UINavigationCont
             phone.text = stringts as String
             
             }*/
-            for(var i=0; i <= 1; i++){
+            //for(var i=0; i <= 1; i += 1){
                 
-                if i == 0 {
+                //if i == 0 {
                     
-                    if imageDataReceiptLength > 0 {
+                    if imageDataReceiptLength == 1 {
                     
                     var image1 = UIImage()
                     
@@ -166,13 +168,19 @@ class AddViewController: UIViewController, UITextFieldDelegate, UINavigationCont
                     
                     imageDataReceipt = UIImagePNGRepresentation(newImage)!
                         
-                    } else {
                         
+                    } else {
+                       
+                        imageDataReceiptLength == 0
+                        
+                        let image3 = UIImage(named: "Default-Portrait-ns@2x.png")
+                        
+                        imageDataReceipt = UIImagePNGRepresentation(image3!)!
                     }
                     
-                } else {
+                //} else {
                     
-                    if imageDataWarrantyLength > 0 {
+                    if imageDataWarrantyLength == 1 {
                     
                     var image2 = UIImage()
                     
@@ -186,14 +194,24 @@ class AddViewController: UIViewController, UITextFieldDelegate, UINavigationCont
                     
                     let newImage = UIGraphicsGetImageFromCurrentImageContext()
                     UIGraphicsEndImageContext()
+                        
                     imageDataWarranty = UIImagePNGRepresentation(newImage)!
                         
-                    } else {
                         
+                    } else {
+
+                        imageDataWarrantyLength == 0
+                        
+                        let image3 = UIImage(named: "Default-Portrait-ns@2x.png")
+                        
+                        imageDataWarranty = UIImagePNGRepresentation(image3!)!
                     }
                     
-                }
-            }
+                //}
+            //}
+            
+            if imageDataWarrantyLength == 1 && imageDataReceiptLength == 1 {
+            
             print(imageDataReceipt.length)
             print(imageDataWarranty.length)
             //if (imageDataReceiptLength == 1 && imageDataWarrantyLength == 1) {
@@ -220,11 +238,122 @@ class AddViewController: UIViewController, UITextFieldDelegate, UINavigationCont
                     
                     print(error)
                 }
-                id = warranty.objectId!
-            }
                 
-            //}
+                id = warranty.objectId!
+                
+                }
+                
+            } else {
+                
+                if imageDataWarrantyLength == 0 && imageDataReceiptLength == 0 {
+                    
+                    print(imageDataReceipt.length)
+                    print(imageDataWarranty.length)
+                    //if (imageDataReceiptLength == 1 && imageDataWarrantyLength == 1) {
+                    let warranty = PFObject(className:"Warranties")
+                    warranty["product"] = newItem.text
+                    warranty["model"] = model.text
+                    warranty["serial"] = serial.text
+                    warranty["price"] = price.text
+                    warranty["bought"] = bought.text
+                    warranty["phone"] = phone.text
+                    warranty["purchaseDate"] = purchaseDate.text
+                    warranty["endDate"] = endDate.text
+                    warranty["notes"] = notes.text
+                    warranty["receipt"] = PFFile(name:"receipt.png", data:imageDataReceipt)
+                    warranty["warranty"] = PFFile(name:"warranty.png", data:imageDataWarranty)
+                    warranty["userId"] = PFUser.currentUser()!.objectId!
+                    warranty.saveInBackgroundWithBlock {
+                        (success: Bool, error: NSError?) -> Void in
+                        if (success) {
+                            
+                            print("New warranty saved.")
+                            
+                        } else {
+                            
+                            print(error)
+                        }
+                        
+                        id = warranty.objectId!
+                        
+                    }
+                    
+                }
+                    if imageDataWarrantyLength == 1 && imageDataReceiptLength == 0 {
+                        
+                        print(imageDataReceipt.length)
+                        print(imageDataWarranty.length)
+                        //if (imageDataReceiptLength == 1 && imageDataWarrantyLength == 1) {
+                        let warranty = PFObject(className:"Warranties")
+                        warranty["product"] = newItem.text
+                        warranty["model"] = model.text
+                        warranty["serial"] = serial.text
+                        warranty["price"] = price.text
+                        warranty["bought"] = bought.text
+                        warranty["phone"] = phone.text
+                        warranty["purchaseDate"] = purchaseDate.text
+                        warranty["endDate"] = endDate.text
+                        warranty["notes"] = notes.text
+                        warranty["receipt"] = PFFile(name:"receipt.png", data:imageDataReceipt)
+                        warranty["warranty"] = PFFile(name:"warranty.png", data:imageDataWarranty)
+                        warranty["userId"] = PFUser.currentUser()!.objectId!
+                        warranty.saveInBackgroundWithBlock {
+                            (success: Bool, error: NSError?) -> Void in
+                            if (success) {
+                                
+                                print("New warranty saved.")
+                                
+                            } else {
+                                
+                                print(error)
+                            }
+                            
+                            id = warranty.objectId!
+                            
+                        }
+                    
+                    
+               }
+                    
+                    if imageDataWarrantyLength == 0 && imageDataReceiptLength == 1 {
+                        
+                        print(imageDataReceipt.length)
+                        print(imageDataWarranty.length)
+                        //if (imageDataReceiptLength == 1 && imageDataWarrantyLength == 1) {
+                        let warranty = PFObject(className:"Warranties")
+                        warranty["product"] = newItem.text
+                        warranty["model"] = model.text
+                        warranty["serial"] = serial.text
+                        warranty["price"] = price.text
+                        warranty["bought"] = bought.text
+                        warranty["phone"] = phone.text
+                        warranty["purchaseDate"] = purchaseDate.text
+                        warranty["endDate"] = endDate.text
+                        warranty["notes"] = notes.text
+                        warranty["receipt"] = PFFile(name:"receipt.png", data:imageDataReceipt)
+                        warranty["warranty"] = PFFile(name:"warranty.png", data:imageDataWarranty)
+                        warranty["userId"] = PFUser.currentUser()!.objectId!
+                        warranty.saveInBackgroundWithBlock {
+                            (success: Bool, error: NSError?) -> Void in
+                            if (success) {
+                                
+                                print("New warranty saved.")
+                                
+                            } else {
+                                
+                                print(error)
+                            }
+                            
+                            id = warranty.objectId!
+                            
+                        }
+                }
 
+                
+                
+                
+                
+            }
             
             let alert = UIAlertController(title: "Warranty Successfully Added!", message: "", preferredStyle: UIAlertControllerStyle.Alert)
             alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { action in
@@ -258,9 +387,8 @@ class AddViewController: UIViewController, UITextFieldDelegate, UINavigationCont
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        scrollView.contentSize.height = 806
-        scrollView.contentSize.width = 344
-        
+        scrollView.contentSize.height = 1006
+        scrollView.contentSize.width = 291
     }
     
     func noInternetConnection() {

@@ -13,25 +13,31 @@ class ReceiptImageViewController: UIViewController, UIScrollViewDelegate {
 
     @IBOutlet var image: UIImageView!
     
-    @IBOutlet var scrollView: UIScrollView!
+    @IBOutlet var scrollImg: UIScrollView!
     
     var showImage = UIImage()
     
     var activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView()
     
+    func shareImage(yourImage: UIImage) {
+        let vc = UIActivityViewController(activityItems: [yourImage], applicationActivities: [])
+        presentViewController(vc, animated: true, completion: nil)
+    }
+    
     @IBAction func print(sender: AnyObject) {
         
-        func shareImage(yourImage: UIImage) {
-            let vc = UIActivityViewController(activityItems: [yourImage], applicationActivities: [])
-            presentViewController(vc, animated: true, completion: nil)
+        if image.image == nil {
+            
+        } else {
+            
+            shareImage(image.image!)
+            
         }
-        
-        shareImage(showImage)
         
     }
 
     @IBAction func backBtn(sender: AnyObject) {
-        
+    
         activityIndicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 80, 80))
         activityIndicator.center = self.view.center
         activityIndicator.hidesWhenStopped = true
@@ -40,19 +46,21 @@ class ReceiptImageViewController: UIViewController, UIScrollViewDelegate {
         activityIndicator.startAnimating()
         UIApplication.sharedApplication().beginIgnoringInteractionEvents()
         
+        parseImage = ""
+        
         performSegueWithIdentifier("receiptImageToHome", sender: self)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        scrollView.contentSize.height = 450
-        scrollView.contentSize.width = 300
+        //scrollView.contentSize.height = 450
+        //scrollView.contentSize.width = 300
         
         let vWidth = self.view.frame.width
         let vHeight = self.view.frame.height
         
-        let scrollImg: UIScrollView = UIScrollView()
+        //let scrollImg: UIScrollView = UIScrollView()
         scrollImg.delegate = self
         scrollImg.frame = CGRectMake(15, 65, vWidth, vHeight)
         scrollImg.alwaysBounceVertical = false
@@ -68,8 +76,9 @@ class ReceiptImageViewController: UIViewController, UIScrollViewDelegate {
         image!.layer.cornerRadius = 11.0
         image!.clipsToBounds = false
         scrollImg.addSubview(image!)
-
-        // Do any additional setup after loading the view.
+        
+        print("Parse Image: \(parseImage)")
+        
     }
     
     func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
@@ -79,6 +88,7 @@ class ReceiptImageViewController: UIViewController, UIScrollViewDelegate {
     override func viewDidAppear(animated: Bool) {
         
         noInternetConnection()
+        
     }
     
     func noInternetConnection() {
@@ -87,7 +97,7 @@ class ReceiptImageViewController: UIViewController, UIScrollViewDelegate {
             
             print("Internet connection OK")
             
-            print(userEmail)
+            //print(userEmail)
             
             getImage()
             
@@ -114,57 +124,72 @@ class ReceiptImageViewController: UIViewController, UIScrollViewDelegate {
 
 
     func getImage() {
-        
-        //var imageShow = UIImage()
-        //let imageData = UIImagePNGRepresentation(imageShow)
-        //let imageFile = PFFile(name:"receipt.png", data:imageData)
-        
+        //print("Parse Image: \(parseImage)")
         let query = PFQuery(className:"Warranties")
         query.whereKey("objectId", equalTo: parseImage)
         query.findObjectsInBackgroundWithBlock {
-            (objects: [AnyObject]?, error: NSError?) -> Void in
+            (objects: [PFObject]?, error: NSError?) -> Void in
             
             if error == nil {
                 
                 self.print("Successfully retrieved \(objects!.count) receipt image.")
                 
-                if let objects = objects as? [PFObject] {
-                    for object in objects {
+                //if let objects = objects {
+                    
+                    for object in objects! {
                         
-                        let userImageFile = object["receipt"] as! PFFile  //anotherPhoto["imageFile"] as PFFile
-                        userImageFile.getDataInBackgroundWithBlock {
-                            (imageData: NSData?, error: NSError?) -> Void in
-                            
-                            if error == nil {
-                                
-                                if let imageData = imageData {
-                                    if imageData.length > 0 {
+                        let userImageFile = object["receipt"] as! PFFile
+                        self.print(userImageFile)
+                        
+                        if (userImageFile.name != "") {
+                            userImageFile.getDataInBackgroundWithBlock {
+                                (imageData: NSData?, error: NSError?) -> Void in
+                                if error == nil {
+                                    if let imageData = imageData {
                                         
-                                        self.showImage = UIImage(data:imageData)!
-                                        self.image.image = self.showImage
-                                        
-                                    }  else {
-                                        
-                                        //self.showImage = UIImage(named:"icon.png")!
-                                        //self.image.image = self.showImage
-                                        
+                                        if imageData.length > 0 {
+                                            
+                                            self.showImage = UIImage(data:imageData)!
+                                            self.image.image = self.showImage
+                                            
+                                        }
                                     }
+                                    
                                 }
+                                
+                                
                             }
+                            
+                        } else {
+                            
+                            let alert = UIAlertController(title: "Sorry, Receipt Image was not found.", message: "The image was never uploaded.", preferredStyle: UIAlertControllerStyle.Alert)
+                            alert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { action in
+                                
+                                alert.dismissViewControllerAnimated(true, completion: nil)
+                                
+                                
+                            }))
+                            
+                            self.presentViewController(alert, animated: true, completion: nil)
                             
                         }
                         
                     }
                     
-                }
+
+                //}
                 
             } else {
+                
                 self.print(error!)
+                
+                
+                
             }
-            
         }
         
     }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

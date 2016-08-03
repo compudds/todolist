@@ -9,7 +9,6 @@
 import UIKit
 import Parse
 
-
 class LoginViewController: UIViewController {
     
     
@@ -104,6 +103,7 @@ class LoginViewController: UIViewController {
                         
                     } else {
                         
+                        
                         if let errorString = signupError!.userInfo["error"] as? NSString {
                             
                             error = errorString as String
@@ -115,7 +115,6 @@ class LoginViewController: UIViewController {
                         }
                         
                         self.displayAlert("Could Not Log In", error: error)
-                        
                         
                     }
                     
@@ -185,6 +184,8 @@ class LoginViewController: UIViewController {
             
             print(userEmail)
             
+            print(PFUser.currentUser())
+            
             
         } else {
             
@@ -208,8 +209,6 @@ class LoginViewController: UIViewController {
     
     override func viewDidAppear(animated: Bool) {
         
-        noInternetConnection()
-        
         if PFUser.currentUser() != nil {
             userEmail = PFUser.currentUser()!.email!
             print(userEmail)
@@ -217,6 +216,8 @@ class LoginViewController: UIViewController {
             self.performSegueWithIdentifier("loginToHome", sender: self)
             
         }
+        
+        noInternetConnection()
         
     }
     

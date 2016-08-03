@@ -7,12 +7,12 @@
 //
 
 import UIKit
-//import CoreData
 import Parse
 import Bolts
+//import PushNotificationManager
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, PushNotificationDelegate {
 
     var window: UIWindow?
 
@@ -22,9 +22,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         Parse.enableLocalDatastore()
         
+        let parseConfiguration = ParseClientConfiguration(block: { (ParseMutableClientConfiguration) -> Void in
+            ParseMutableClientConfiguration.applicationId = "warrantylocker34egegRTGRTgr435rfER"
+            ParseMutableClientConfiguration.clientKey = "emwp4FW34f,9q0Q(UCJA5E#@@"
+            ParseMutableClientConfiguration.server = "https://warrantylocker.herokuapp.com/parse"
+        })
+        
+        Parse.initializeWithConfiguration(parseConfiguration)
+        
+        PushNotificationManager.pushManager().delegate = self
+        PushNotificationManager.pushManager().handlePushReceived(launchOptions)
+        PushNotificationManager.pushManager().sendAppOpen()
+        PushNotificationManager.pushManager().registerForPushNotifications()
+        
+        //PFUser.enableAutomaticUser()
+        
         // Initialize Parse.
-        Parse.setApplicationId("tw4kYJnCvcDJP3uVShaA4SWuYHrwKykXJAXxHXF9",
-            clientKey: "Uk9UZkHostx0vUhKCVPhXw48PiMkFqYlvUzQTRBn")
+        //Parse.setApplicationId("tw4kYJnCvcDJP3uVShaA4SWuYHrwKykXJAXxHXF9",clientKey: "Uk9UZkHostx0vUhKCVPhXw48PiMkFqYlvUzQTRBn")
         
         // [Optional] Track statistics around application opens.
         PFAnalytics.trackAppOpenedWithLaunchOptions(launchOptions)
@@ -35,8 +49,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // "content_available" was used to trigger a background push (introduced in iOS 7).
             // In that case, we skip tracking here to avoid double counting the app-open.
             
-            let preBackgroundPush = !application.respondsToSelector("backgroundRefreshStatus")
-            let oldPushHandlerOnly = !self.respondsToSelector("application:didReceiveRemoteNotification:fetchCompletionHandler:")
+            let preBackgroundPush = !application.respondsToSelector(Selector("backgroundRefreshStatus"))
+            let oldPushHandlerOnly = !self.respondsToSelector(#selector(UIApplicationDelegate.application(_:didReceiveRemoteNotification:fetchCompletionHandler:)))
             var pushPayload = false
             if let options = launchOptions {
                 pushPayload = options[UIApplicationLaunchOptionsRemoteNotificationKey] != nil
@@ -46,7 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
-        if application.respondsToSelector("registerUserNotificationSettings:") {
+        if application.respondsToSelector(#selector(UIApplication.registerUserNotificationSettings(_:))) {
             let userNotificationTypes: UIUserNotificationType = [UIUserNotificationType.Alert, UIUserNotificationType.Badge, UIUserNotificationType.Sound]
             let settings = UIUserNotificationSettings(forTypes: userNotificationTypes, categories: nil)
             application.registerUserNotificationSettings(settings)
@@ -59,6 +73,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             application.registerForRemoteNotifications()
 
         }
+        
+        //NewRelicAgent.enableFeatures(NRMAFeatureFlags.NRFeatureFlag_SwiftInteractionTracing);
+        //NewRelicAgent.startWithApplicationToken("AA2b26170b8a3b7845d4436383b2981df9cfda9b13");
+
         return true
     }
 
@@ -89,6 +107,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let installation = PFInstallation.currentInstallation()
         installation.setDeviceTokenFromData(deviceToken)
         installation.saveInBackground()
+        
+        PushNotificationManager.pushManager().handlePushRegistration(deviceToken)
     }
     
     func application(application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: NSError) {
@@ -97,6 +117,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             print("application:didFailToRegisterForRemoteNotificationsWithError: %@", error)
         }
+        
+        PushNotificationManager.pushManager().handlePushRegistrationFailure(error)
     }
     
     func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
@@ -104,6 +126,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if application.applicationState == UIApplicationState.Inactive {
             PFAnalytics.trackAppOpenedWithRemoteNotificationPayload(userInfo)
         }
+        
+        PushNotificationManager.pushManager().handlePushReceived(userInfo)
+    }
+    
+    func onPushAccepted(pushManager: PushNotificationManager!, withNotification pushNotification: [NSObject : AnyObject]!, onStart: Bool) {
+        print("Push notification accepted: \(pushNotification)");
     }
     
     
