@@ -13,7 +13,6 @@
 		0738E3511B934C6100C9F025 /* pen.png in Resources */ = {isa = PBXBuildFile; fileRef = 0738E3501B934C6100C9F025 /* pen.png */; };
 		0738E3711B938F9000C9F025 /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0738E3701B938F9000C9F025 /* LogInViewController.swift */; };
 		0738E3731B938FE100C9F025 /* CreateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0738E3721B938FE100C9F025 /* CreateViewController.swift */; };
-		075D0FFD1CD6482C00A7C61D /* Pushwoosh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 075D0FFC1CD6482C00A7C61D /* Pushwoosh.framework */; };
 		07658C141BAA1802005BBEF3 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 07658C131BAA1802005BBEF3 /* libz.tbd */; };
 		07658C161BAA1815005BBEF3 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 07658C151BAA1815005BBEF3 /* libsqlite3.tbd */; };
 		0789BADB1B932CAF0047211D /* Warranties.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0789BAD91B932CAF0047211D /* Warranties.xcdatamodeld */; };
@@ -26,9 +25,9 @@
 		07A0415119F941D400714983 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07A0415019F941D400714983 /* Images.xcassets */; };
 		07A0415419F941D400714983 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07A0415219F941D400714983 /* LaunchScreen.xib */; };
 		07A0416019F941D500714983 /* To_Do_ListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A0415F19F941D500714983 /* To_Do_ListTests.swift */; };
-		07A40B651CD65D9E006B2609 /* NewRelicAgent.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07A40B641CD65D9E006B2609 /* NewRelicAgent.framework */; };
 		07A937631CB697EA001D62CC /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07A937621CB697EA001D62CC /* Bolts.framework */; };
 		07A937651CB697F9001D62CC /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07A937641CB697F9001D62CC /* Parse.framework */; };
+		07D1B53A244E29BF004C0AFF /* package.json in Resources */ = {isa = PBXBuildFile; fileRef = 07D1B539244E29BE004C0AFF /* package.json */; };
 		07DF9B971B93BE8400199A21 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07DF9B961B93BE8400199A21 /* AudioToolbox.framework */; };
 		07DF9B991B93BF3300199A21 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07DF9B981B93BF3300199A21 /* CFNetwork.framework */; };
 		07DF9B9B1B93BF4100199A21 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07DF9B9A1B93BF4100199A21 /* CoreGraphics.framework */; };
@@ -64,7 +63,6 @@
 		0738E3501B934C6100C9F025 /* pen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pen.png; sourceTree = "<group>"; };
 		0738E3701B938F9000C9F025 /* LogInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		0738E3721B938FE100C9F025 /* CreateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateViewController.swift; sourceTree = "<group>"; };
-		075D0FFC1CD6482C00A7C61D /* Pushwoosh.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Pushwoosh.framework; sourceTree = "<group>"; };
 		07658C131BAA1802005BBEF3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		07658C151BAA1815005BBEF3 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		077B07EC1F75EDB00001F4DB /* Warranty Locker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Warranty Locker.entitlements"; sourceTree = "<group>"; };
@@ -83,9 +81,9 @@
 		07A0415919F941D500714983 /* Warranty LockerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Warranty LockerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		07A0415E19F941D500714983 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		07A0415F19F941D500714983 /* To_Do_ListTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = To_Do_ListTests.swift; sourceTree = "<group>"; };
-		07A40B641CD65D9E006B2609 /* NewRelicAgent.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = NewRelicAgent.framework; sourceTree = "<group>"; };
 		07A937621CB697EA001D62CC /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
 		07A937641CB697F9001D62CC /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
+		07D1B539244E29BE004C0AFF /* package.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = package.json; sourceTree = "<group>"; };
 		07DF9B961B93BE8400199A21 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		07DF9B981B93BF3300199A21 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		07DF9B9A1B93BF4100199A21 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -118,11 +116,9 @@
 				07DF9BA51B93BF7800199A21 /* MobileCoreServices.framework in Frameworks */,
 				07DF9BA31B93BF6C00199A21 /* QuartzCore.framework in Frameworks */,
 				07DF9B9D1B93BF4800199A21 /* CoreLocation.framework in Frameworks */,
-				07A40B651CD65D9E006B2609 /* NewRelicAgent.framework in Frameworks */,
 				07DF9B9B1B93BF4100199A21 /* CoreGraphics.framework in Frameworks */,
 				07DF9B991B93BF3300199A21 /* CFNetwork.framework in Frameworks */,
 				07DF9B971B93BE8400199A21 /* AudioToolbox.framework in Frameworks */,
-				075D0FFD1CD6482C00A7C61D /* Pushwoosh.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,13 +142,12 @@
 		07A0413919F941D400714983 = {
 			isa = PBXGroup;
 			children = (
+				07D1B539244E29BE004C0AFF /* package.json */,
 				077B07EC1F75EDB00001F4DB /* Warranty Locker.entitlements */,
 				070B5C271CC812CB00255CBE /* libc++.tbd */,
 				07658C151BAA1815005BBEF3 /* libsqlite3.tbd */,
 				07658C131BAA1802005BBEF3 /* libz.tbd */,
-				07A40B641CD65D9E006B2609 /* NewRelicAgent.framework */,
 				070B5C251CC8128C00255CBE /* CoreTelephony.framework */,
-				075D0FFC1CD6482C00A7C61D /* Pushwoosh.framework */,
 				07A937641CB697F9001D62CC /* Parse.framework */,
 				07A937621CB697EA001D62CC /* Bolts.framework */,
 				07DF9BAA1B93BFA700199A21 /* SystemConfiguration.framework */,
@@ -332,6 +327,7 @@
 				0789BAE31B933AC40047211D /* pen-Small.png in Resources */,
 				07F58B34215AE94C00AD6570 /* Icon-1024.png in Resources */,
 				072B65771BB4482900952790 /* Icon-76-2x.png in Resources */,
+				07D1B53A244E29BF004C0AFF /* package.json in Resources */,
 				0738E3511B934C6100C9F025 /* pen.png in Resources */,
 				07E45BCD1B97E80400B01370 /* icon.png in Resources */,
 				0789BAE11B933A010047211D /* Home-Small.png in Resources */,
