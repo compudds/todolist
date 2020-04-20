@@ -17,16 +17,16 @@ class CreateViewController: UIViewController {
     
     var activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView()
     
-    func displayAlert(title:String, error:String) {
+    func displayAlert(_ title:String, error:String) {
         
-        let alert = UIAlertController(title: title, message: error, preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { action in
+        let alert = UIAlertController(title: title, message: error, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
             
-            alert.dismissViewControllerAnimated(true, completion: nil)
+            alert.dismiss(animated: true, completion: nil)
             
         }))
         
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
         
     }
     
@@ -44,29 +44,29 @@ class CreateViewController: UIViewController {
     
     @IBOutlet var signUpToggleButton: UIButton!
     
-    @IBAction func toggleSignUp(sender: AnyObject) {
+    @IBAction func toggleSignUp(_ sender: AnyObject) {
         
-        self.performSegueWithIdentifier("createToLogin", sender: self)
+        self.performSegue(withIdentifier: "createToLogin", sender: self)
         
     }
     
-    @IBAction func signUp(sender: AnyObject) {
+    @IBAction func signUp(_ sender: AnyObject) {
         
         var error = ""
         
         
-        activityIndicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50))
+        activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         activityIndicator.center = self.view.center
         activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+        activityIndicator.style = UIActivityIndicatorView.Style.large
         view.addSubview(activityIndicator)
         activityIndicator.startAnimating()
-        UIApplication.sharedApplication().beginIgnoringInteractionEvents()
+        self.view.isUserInteractionEnabled = false
         
         if username.text == "" || password.text == "" || emailaddress.text == "" {
             
             self.activityIndicator.stopAnimating()
-            UIApplication.sharedApplication().endIgnoringInteractionEvents()
+            self.view.isUserInteractionEnabled = true
             
             error = "Please enter all fields."
             
@@ -81,24 +81,24 @@ class CreateViewController: UIViewController {
             user.email = emailaddress.text
             //user.channels = ["endDate"]
             
-            user.signUpInBackgroundWithBlock {
+            user.signUpInBackground {
                 (succeeded, signupError) -> Void in
                 
                 self.activityIndicator.stopAnimating()
-                UIApplication.sharedApplication().endIgnoringInteractionEvents()
+                self.view.isUserInteractionEnabled = true
                 
                 if signupError == nil  {
                     // Hooray! Let them use the app now.
                     
-                    print("\(PFUser.currentUser()!.username) signed up")
+                    print("\(PFUser.current()!) signed up")
                     
-                    self.performSegueWithIdentifier("createToHome", sender: self)
+                    self.performSegue(withIdentifier: "createToHome", sender: self)
                     
                 } else {
                     
-                    if let errorString = signupError!.userInfo["error"] as? NSString {
+                    if signupError != nil {
                         
-                        error = errorString as String
+                        error = signupError as! String
                         
                     } else {
                         
@@ -111,7 +111,7 @@ class CreateViewController: UIViewController {
                 }
             }
             
-            let currentInstallation = PFInstallation.currentInstallation()
+            let currentInstallation = PFInstallation.current()
             currentInstallation.addUniqueObject("expireDate", forKey: "channels")
             currentInstallation.saveInBackground()
             
@@ -124,7 +124,7 @@ class CreateViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         //clean = ""
-        
+    
     }
     
     override func didReceiveMemoryWarning() {
@@ -145,15 +145,15 @@ class CreateViewController: UIViewController {
             
             print("Internet connection FAILED")
             
-            let alert = UIAlertController(title: "Sorry, no internet connection found.", message: "Warranty Locker requires an internet connection.", preferredStyle: UIAlertControllerStyle.Alert)
-            alert.addAction(UIAlertAction(title: "Try Again?", style: .Default, handler: { action in
+            let alert = UIAlertController(title: "Sorry, no internet connection found.", message: "Warranty Locker requires an internet connection.", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Try Again?", style: .default, handler: { action in
                 
-                alert.dismissViewControllerAnimated(true, completion: nil)
+                alert.dismiss(animated: true, completion: nil)
                 self.noInternetConnection()
                 
             }))
             
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
             
             
         }
@@ -161,26 +161,26 @@ class CreateViewController: UIViewController {
     }
 
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         
         noInternetConnection()
         
-        if PFUser.currentUser() != nil {
+        if PFUser.current() != nil {
             
-            userEmail = PFUser.currentUser()!.email!
+            userEmail = PFUser.current()!.email!
             print(userEmail)
             
-            self.performSegueWithIdentifier("createToHome", sender: self)
+            self.performSegue(withIdentifier: "createToHome", sender: self)
             
         }
         
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // username.resignFirstResponder()
         return true
     }

@@ -15,11 +15,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.35</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>14</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
@@ -29,6 +29,14 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>We only use photos for this app for intetnal purposes and we do not sell or use any private photos to any third parties.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>We may in the future need your location but this version does not.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We may in the future need your location but this version does not.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We only use photos for this app for intetnal purposes and we do not sell or use any private photos to any third parties.</string>
 	<key>Pushwoosh_APPID</key>
 	<string>2761E-99AAB</string>
 	<key>UILaunchStoryboardName</key>

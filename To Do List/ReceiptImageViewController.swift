@@ -11,7 +11,7 @@ import Parse
 
 class ReceiptImageViewController: UIViewController, UIScrollViewDelegate {
 
-    @IBOutlet var image: UIImageView!
+    @IBOutlet var imageFile: UIImageView!
     
     @IBOutlet var scrollImg: UIScrollView!
     
@@ -19,50 +19,56 @@ class ReceiptImageViewController: UIViewController, UIScrollViewDelegate {
     
     var activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView()
     
-    func shareImage(yourImage: UIImage) {
+    func shareImage(_ yourImage: UIImage) {
         let vc = UIActivityViewController(activityItems: [yourImage], applicationActivities: [])
-        presentViewController(vc, animated: true, completion: nil)
+        present(vc, animated: true, completion: nil)
     }
     
-    @IBAction func print(sender: AnyObject) {
+    @IBAction func sendBtn(_ sender: AnyObject) {
         
-        if image.image == nil {
+        if imageFile.image == nil {
             
         } else {
             
-            shareImage(image.image!)
+            shareImage(imageFile.image!)
             
         }
         
     }
 
-    @IBAction func backBtn(sender: AnyObject) {
+    @IBAction func backBtn(_ sender: AnyObject) {
     
-        activityIndicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 80, 80))
+        activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
         activityIndicator.center = self.view.center
         activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+        activityIndicator.style = UIActivityIndicatorView.Style.large
         self.view.addSubview(activityIndicator)
         activityIndicator.startAnimating()
-        UIApplication.sharedApplication().beginIgnoringInteractionEvents()
+        self.view.isUserInteractionEnabled = false
         
         parseImage = ""
         
-        performSegueWithIdentifier("receiptImageToHome", sender: self)
+        performSegue(withIdentifier: "receiptImageToHome", sender: self)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //scrollView.contentSize.height = 450
-        //scrollView.contentSize.width = 300
+        activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 80, height: 80))
+         activityIndicator.center = self.view.center
+         activityIndicator.hidesWhenStopped = true
+         activityIndicator.style = UIActivityIndicatorView.Style.large
+         self.view.addSubview(activityIndicator)
+         activityIndicator.startAnimating()
+         self.view.isUserInteractionEnabled = false
+        
         
         let vWidth = self.view.frame.width
         let vHeight = self.view.frame.height
         
         //let scrollImg: UIScrollView = UIScrollView()
         scrollImg.delegate = self
-        scrollImg.frame = CGRectMake(15, 65, vWidth, vHeight)
+        scrollImg.frame = CGRect(x: 15, y: 65, width: vWidth, height: vHeight)
         scrollImg.alwaysBounceVertical = false
         scrollImg.alwaysBounceHorizontal = false
         scrollImg.showsVerticalScrollIndicator = true
@@ -73,19 +79,94 @@ class ReceiptImageViewController: UIViewController, UIScrollViewDelegate {
         
         self.view.addSubview(scrollImg)
         
-        image!.layer.cornerRadius = 11.0
-        image!.clipsToBounds = false
-        scrollImg.addSubview(image!)
+        imageFile!.layer.cornerRadius = 11.0
+        imageFile!.clipsToBounds = false
+        scrollImg.addSubview(imageFile!)
         
         print("Parse Image: \(parseImage)")
         
     }
     
-    func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
-        return self.image
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return self.imageFile
     }
     
-    override func viewDidAppear(animated: Bool) {
+    func getImage() {
+        
+        print("Parse Image")
+        
+        let query = PFQuery(className:"Warranties")
+        query.whereKey("objectId", equalTo: parseImage)
+        query.findObjectsInBackground ( block: {
+            (objects, error) in
+            
+            if error == nil {
+                
+                print("Successfully retrieved \(objects!.count) receipt image.")
+                
+                //if (objects as? PFObject) != nil {
+                    
+                    for object in objects! {
+                        
+                        let userImageFile = object["receipt"] as! PFFile
+                        
+                        if (userImageFile.name != "") {
+                            
+                            userImageFile.getDataInBackground ( block: {
+                                (data, error) in
+                                
+                                if error == nil {
+                                    
+                                    if let parseImageFile = data {
+                                        
+                                        if parseImageFile.count > 0 {
+                                            
+                                            self.showImage = UIImage(data: parseImageFile)!
+                                            
+                                            self.imageFile.image = self.showImage
+                                            
+                                            print("UserImageFile:  \(userImageFile)")
+                                            
+                                        }
+                                    }
+                                    
+                                }
+                                
+                                
+                            })
+                            
+                        } else {
+                            
+                            let alert = UIAlertController(title: "Sorry, Receipt Image was not found.", message: "The image was never uploaded.", preferredStyle: UIAlertController.Style.alert)
+                            alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { action in
+                                
+                                alert.dismiss(animated: true, completion: nil)
+                                
+                                
+                            }))
+                            
+                            self.present(alert, animated: true, completion: nil)
+                            
+                        }
+                        
+                    }
+                    
+
+                //}
+                
+            } else {
+                
+                print(error!)
+                
+                
+                
+            }
+        })
+        
+    }
+    
+    
+    override func viewDidAppear(_ animated: Bool) {
         
         noInternetConnection()
         
@@ -97,95 +178,26 @@ class ReceiptImageViewController: UIViewController, UIScrollViewDelegate {
             
             print("Internet connection OK")
             
-            //print(userEmail)
-            
             getImage()
             
-            
+            activityIndicator.stopAnimating()
+            self.view.isUserInteractionEnabled = true
+                    
         } else {
             
-            print("Internet connection FAILED")
+            print("Internet connection FAILED" as AnyObject)
             
-            let alert = UIAlertController(title: "Sorry, no internet connection found.", message: "Warranty Locker requires an internet connection.", preferredStyle: UIAlertControllerStyle.Alert)
-            alert.addAction(UIAlertAction(title: "Try Again?", style: .Default, handler: { action in
+            let alert = UIAlertController(title: "Sorry, no internet connection found.", message: "Warranty Locker requires an internet connection.", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Try Again?", style: .default, handler: { action in
                 
-                alert.dismissViewControllerAnimated(true, completion: nil)
+                alert.dismiss(animated: true, completion: nil)
                 self.noInternetConnection()
                 
             }))
             
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
             
             
-        }
-        
-    }
-    
-
-
-    func getImage() {
-        //print("Parse Image: \(parseImage)")
-        let query = PFQuery(className:"Warranties")
-        query.whereKey("objectId", equalTo: parseImage)
-        query.findObjectsInBackgroundWithBlock {
-            (objects: [PFObject]?, error: NSError?) -> Void in
-            
-            if error == nil {
-                
-                self.print("Successfully retrieved \(objects!.count) receipt image.")
-                
-                //if let objects = objects {
-                    
-                    for object in objects! {
-                        
-                        let userImageFile = object["receipt"] as! PFFile
-                        self.print(userImageFile)
-                        
-                        if (userImageFile.name != "") {
-                            userImageFile.getDataInBackgroundWithBlock {
-                                (imageData: NSData?, error: NSError?) -> Void in
-                                if error == nil {
-                                    if let imageData = imageData {
-                                        
-                                        if imageData.length > 0 {
-                                            
-                                            self.showImage = UIImage(data:imageData)!
-                                            self.image.image = self.showImage
-                                            
-                                        }
-                                    }
-                                    
-                                }
-                                
-                                
-                            }
-                            
-                        } else {
-                            
-                            let alert = UIAlertController(title: "Sorry, Receipt Image was not found.", message: "The image was never uploaded.", preferredStyle: UIAlertControllerStyle.Alert)
-                            alert.addAction(UIAlertAction(title: "Cancel", style: .Default, handler: { action in
-                                
-                                alert.dismissViewControllerAnimated(true, completion: nil)
-                                
-                                
-                            }))
-                            
-                            self.presentViewController(alert, animated: true, completion: nil)
-                            
-                        }
-                        
-                    }
-                    
-
-                //}
-                
-            } else {
-                
-                self.print(error!)
-                
-                
-                
-            }
         }
         
     }

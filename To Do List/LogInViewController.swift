@@ -11,22 +11,20 @@ import Parse
 
 class LoginViewController: UIViewController {
     
-    
     var activityIndicator: UIActivityIndicatorView = UIActivityIndicatorView()
     
-    func displayAlert(title:String, error:String) {
+    func displayAlert(_ title:String, error:String) {
         
-        let alert = UIAlertController(title: title, message: error, preferredStyle: UIAlertControllerStyle.Alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { action in
+        let alert = UIAlertController(title: title, message: error, preferredStyle: UIAlertController.Style.alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
             
-            alert.dismissViewControllerAnimated(true, completion: nil)
+            alert.dismiss(animated: true, completion: nil)
             
         }))
         
-        self.presentViewController(alert, animated: true, completion: nil)
+        self.present(alert, animated: true, completion: nil)
         
     }
-    
     
     @IBOutlet var username: UITextField!
     
@@ -40,10 +38,10 @@ class LoginViewController: UIViewController {
     
     @IBOutlet var signUpToggleButton: UIButton!
     
-    @IBAction func create(sender: AnyObject) {
+    @IBAction func create(_ sender: AnyObject) {
         
         
-        self.performSegueWithIdentifier("loginToCreate", sender: self)
+        self.performSegue(withIdentifier: "loginToCreate", sender: self)
         
         
     }
@@ -51,35 +49,34 @@ class LoginViewController: UIViewController {
     
     @IBOutlet var emailPasswordReset: UITextField!
     
-    @IBAction func resetPassword(sender: AnyObject) {
+    @IBAction func resetPassword(_ sender: AnyObject) {
         
         self.emailPasswordReset.alpha = 1
-        self.loginButton.setTitle("Send", forState: .Normal)
+        self.loginButton.setTitle("Send", for: UIControl.State())
         self.password.alpha = 0
         self.username.alpha = 0
         
     }
     
-    
-    @IBAction func loginn(sender: AnyObject) {
+    @IBAction func loginn(_ sender: AnyObject) {
         
         var error = ""
         
         
-        activityIndicator = UIActivityIndicatorView(frame: CGRectMake(0, 0, 50, 50))
+        activityIndicator = UIActivityIndicatorView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         activityIndicator.center = self.view.center
         activityIndicator.hidesWhenStopped = true
-        activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray
+        activityIndicator.style = UIActivityIndicatorView.Style.large
         view.addSubview(activityIndicator)
         activityIndicator.startAnimating()
-        UIApplication.sharedApplication().beginIgnoringInteractionEvents()
+        self.view.isUserInteractionEnabled = false
         
         if self.emailPasswordReset.alpha == 0 {
             
             if username.text == "" || password.text == "" {
                 
                 self.activityIndicator.stopAnimating()
-                UIApplication.sharedApplication().endIgnoringInteractionEvents()
+                self.view.isUserInteractionEnabled = true
                 
                 error = "Please enter all fields."
                 
@@ -87,26 +84,29 @@ class LoginViewController: UIViewController {
                 
             } else {
                 
-                PFUser.logInWithUsernameInBackground(username.text!, password:password.text!) {
+                
+                PFUser.logInWithUsername(inBackground: username.text!, password:password.text!) {
                     (user, signupError) -> Void in
                     
                     
                     self.activityIndicator.stopAnimating()
-                    UIApplication.sharedApplication().endIgnoringInteractionEvents()
+                    self.view.isUserInteractionEnabled = true
                     
                     if user != nil {
                         
-                        print("\(PFUser.currentUser()!.username) is logged in")
-                        userEmail = PFUser.currentUser()!.email!
+                        print("\(PFUser.current()!) is logged in")
+                        userEmail = PFUser.current()!.email!
                         
-                        self.performSegueWithIdentifier("loginToHome", sender: self)
+                        currentLoginState = "authorized"
+                        
+                        self.performSegue(withIdentifier: "loginToHome", sender: self)
                         
                     } else {
                         
                         
-                        if let errorString = signupError!.userInfo["error"] as? NSString {
+                        if signupError != nil {
                             
-                            error = errorString as String
+                            error = signupError as! String
                             
                         } else {
                             
@@ -128,31 +128,31 @@ class LoginViewController: UIViewController {
             
             if self.emailPasswordReset.text != "" {
                 
-                PFUser.requestPasswordResetForEmailInBackground(self.emailPasswordReset.text!)
+                PFUser.requestPasswordResetForEmail(inBackground: self.emailPasswordReset.text!)
                 
                 self.activityIndicator.stopAnimating()
-                UIApplication.sharedApplication().endIgnoringInteractionEvents()
+                self.view.isUserInteractionEnabled = true
                 
                 
                 self.emailPasswordReset.alpha = 0
                 self.password.alpha = 1
                 self.username.alpha = 1
-                self.loginButton.setTitle("Log In", forState: .Normal)
+                self.loginButton.setTitle("Log In", for: UIControl.State())
                 
             } else {
                 
                 self.activityIndicator.stopAnimating()
-                UIApplication.sharedApplication().endIgnoringInteractionEvents()
+                self.view.isUserInteractionEnabled = true
                 
                 
-                let alert = UIAlertController(title: "Enter email address!", message: error, preferredStyle: UIAlertControllerStyle.Alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .Default, handler: { action in
+                let alert = UIAlertController(title: "Enter email address!", message: error, preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
                     
-                    alert.dismissViewControllerAnimated(true, completion: nil)
+                    alert.dismiss(animated: true, completion: nil)
                     
                 }))
                 
-                self.presentViewController(alert, animated: true, completion: nil)
+                self.present(alert, animated: true, completion: nil)
                 
                 
                 
@@ -168,6 +168,7 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+       
     }
     
     
@@ -184,59 +185,57 @@ class LoginViewController: UIViewController {
             
             print(userEmail)
             
-            print(PFUser.currentUser())
+            if(PFUser.current() != nil) {
+                
+                print(PFUser.current()!)
+                
+            }
             
             
         } else {
             
             print("Internet connection FAILED")
             
-            let alert = UIAlertController(title: "Sorry, no internet connection found.", message: "Warranty Locker requires an internet connection.", preferredStyle: UIAlertControllerStyle.Alert)
-            alert.addAction(UIAlertAction(title: "Try Again?", style: .Default, handler: { action in
+            let alert = UIAlertController(title: "Sorry, no internet connection found.", message: "Warranty Locker requires an internet connection.", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Try Again?", style: .default, handler: { action in
                 
-                alert.dismissViewControllerAnimated(true, completion: nil)
+                alert.dismiss(animated: true, completion: nil)
                 self.noInternetConnection()
                 
             }))
             
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.present(alert, animated: true, completion: nil)
             
             
         }
         
     }
-
     
-    override func viewDidAppear(animated: Bool) {
-        
-        if PFUser.currentUser() != nil {
-            userEmail = PFUser.currentUser()!.email!
-            print(userEmail)
-            
-            self.performSegueWithIdentifier("loginToHome", sender: self)
-            
-        }
+    override func viewDidAppear(_ animated: Bool) {
         
         noInternetConnection()
         
+        if (PFUser.current() != nil ) {
+            
+            userEmail = PFUser.current()!.email!
+            
+            print(userEmail)
+            
+            self.performSegue(withIdentifier: "loginToHome", sender: self)
+        
+        } 
+            
     }
     
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.view.endEditing(true)
     }
     
-    func textFieldShouldReturn(textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // username.resignFirstResponder()
         return true
     }
-    
-    /*override func viewWillAppear(animated: Bool) {
-        self.navigationController?.navigationBarHidden = true
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        self.navigationController?.navigationBarHidden = false
-    }*/
     
 }
 
